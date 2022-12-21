@@ -150,9 +150,12 @@ method), and they are what we will try to approximate today (our ``output'' or `
 \item Calculate the loss on the testing dataset that was set aside.
   \textbf{Remember that the inputs and outputs need to be transformed in the same way as in the training step!}
   Comment on the result.
-\item For either the test dataset or the train dataset, calcluate and plot the {\textbf{residual}}
-  between the line loading that model predicts and the ``true'' line loading calculated
-  by the explicit power flow calculation. Do this for each line loading (on the same plot).
+\item For either the test dataset or the train dataset, calcluate and plot the {\textbf{absolute residual}}
+  ($y_\mathrm{pred}-y_\mathrm{actual}$) and {\textbf{relative residual}} ($(y_\mathrm{pred}-y_\mathrm{actual})/y_\mathrm{actual}$)
+  between the line loading that the model predicts and the ``true'' line loading calculated
+  by the explicit power flow calculation. Do this for each line loading.\\[2mm]
+  {\textbf{Note:}} to do this, you will need to transform the model output \code{y\_test\_pred} back to ``line loading'' units,
+  which requires e.g. \code{y\_scaler.inverse\_transform(y\_test\_pred)}.
 \end{enumerate}
 
 \subsection{Optimize the neural network hyperparameters.}
@@ -184,12 +187,47 @@ The report consists of two parts:
   \item Answers to the questions or prompts in Section~\ref{ml_pf}.
   \item The requested data and result plots. Be sure to properly label axes and data.
   \item This exercise was a demonstration of supervised learning, i.e. where a power flow
-    solver was run to find the ``true'' result. How can this machine problem be reformulated
+    solver was run to find the ``true'' result. How can this machine problem -- i.e. the problem
+    of solving the power flow equations -- be reformulated
     as an \textbf{unsupervised learning problem}, i.e. without the benefit of having labeled
-    data available?
+    data available (i.e. without a separate power flow solver at hand)?
   \item Thinking about appraches for more complicated grid networks, what ANN architectures
     might be appropriate for leveraging the structure inherent to the grid data?
   \end{itemize}
 \end{itemize}
+
+\section{Useful code snippets}
+
+Here is a code snippet for plotting multiple data columns in a DataFrame:
+
+\begin{verbatim}
+import matplotlib.pyplot as plt
+fig,ax = plt.subplots(1,1,figsize=(10,8))
+columns = ['A','B','C'] # column names to plot
+ax.plot(the_dataframe[columns],label=columns)
+ax.set(xlabel='x label',ylabel='y label')
+ax.legend()
+\end{verbatim}
+
+To restrict the range of a DataFrame (e.g. from timestep 5 to timestep 20), for instance
+to plot certain time ranges:
+
+\begin{verbatim}
+data[5:20]
+\end{verbatim}
+
+If you encounter the error ``Error: Argument must be tensor, not ...'' for a given variable
+$z$, then the solution is to wrap $z$ according to the following:
+
+\begin{verbatim}
+torch.tensor(z).float()
+\end{verbatim}
+
+To import e.g. the Adam Optimizer in Torch:
+
+\begin{verbatim}
+from torch.optim import Adam
+\end{verbatim}
+
 
 \end{document}
