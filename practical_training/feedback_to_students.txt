@@ -1,0 +1,48 @@
+
+Feedback to students:
+
+1. You have a different data transformation for the test set and the train set -- this is wrong! Remember that when evaluating the test set, you should do exactly what you did to the train set, and this includes applying the same (only one for X, and one for Y) transform.
+2. The scale of the ratio plot (y_test_sort/y_pred_inv) is very large, so it's hard to see whether the network performs well, but it is clear that there are big outliers.
+3. One issue I see with your network is that it is missing an activation function, which means that it will be unable to handle nonlinear problems! This is probably why the performance is not so good.
+
+1. FYI, Gen4 is data from a wind turbine (which perform well in the grid generally) and Gen01 is a solar array (you have apparently plotted the night-time :)
+2. For looking at the test set, you are actually comparing *transformed* y results to one another. Instead, you should "un-transform" the transformed y-predictions so that you are comparing the originial line loading values.
+
+1. By defining only one scaler and running fit_transform multiple times, you are actually *overwriting* and therefore redefining the transformation each time! This is not good, since test data should be transformed using the same transformation defined on the test data!
+2. You are missing a plot of the loss as a function of training epoch!
+3. Power flow is a *nonlinear* problem and therefore a neural network with activation functions should perform better. Indeed, when I test out some networks with and without activation, the ones with activation perform better, even in this simple case.
+
+1. You correctly identified the solar installation! The generator with significant fluctuations is a wind turbine.
+2. Your network looks good, but probably has a few too many parameters for the size of the problem : ). I don't see your test loss, though, so I cannot tell if there is overfitting.
+3. If you trained using more epochs, you might have seen even better results (my network was still learning after 10,000 epochs)!
+
+1. What about the plot of the generators?
+2. You have a different data transformation for the test set and the train set -- this is wrong! Remember that when evaluating the test set, you should do exactly what you did to the train set, and this includes applying the same (only one for X, and one for Y) transform.
+3. One issue I see with your network is that it is missing an activation function, which means that it will be unable to handle nonlinear problems! This is probably why the performance is not so good.
+4. You mention the need to sort, but I don't think this is the case... and in the end you do not sort the values. ?
+5. You say that the data is very similar, but the scale of the y-axis is enormous, so I am not sure this is the case.
+6. I do not think the discontinuous nature of the data makes a difference here, since the neural network only evaluates one timestep at a time anyway..!
+
+
+
+	
+Dear students,
+
+I have completed the review of reports -- all reports were accepted. Thank you all for your effort and patience with this new practical training : ).
+
+You may find some specific feedback on your submission in the "Feedback comments" colum (https://lernraum.th-luebeck.de/mod/assign/view.php?id=265561).
+
+Some general remarks:
+1. For your information, "sgen_bus00_01" is data from a solar installation and "sgen_bus04_01" is a wind turbine.
+
+2. Some of you forgot an activation layer in your networks. An activation layer will significantly improve the results and allow you to solve non-linear problems, of which power flow is an example.
+
+3. Transforming the data seemed to be tricky. Remember that whatever you do to the train data, you should apply in exactly the same way to the test data (and therefore you should not define a *new* transform for the test data.) You also need to "inverse_transform" the Y-output of the neural network to get back to the "line loading" value.
+
+4. Typically, you all should use way more training epochs (I used 10,000)! I would check (via a log-scale plot) whether the loss continues to fall during training. You can even define a stopping criteria to ensure that you have trained enough.
+
+5. For the question of how to solve this problem in an unsupervised way, many of you mentioned either categorization or clustering, but these techniques are not directly useful to solve the power flow problem. However, there *IS* a way to solve the power flow problem, using *Reinforcement Learning*! The way to do it is to define a "reward" based on how much the neural network's proposed result violates Kirschoff's voltage and current laws at each node, in order to get the network to minimize these physical violations. (The network would try to predict voltage and current, rather than line loading, and the line loading would be calculated afterward.) This strategy has been demonstrated successfully in at least one academic paper (https://hal.archives-ouvertes.fr/hal-02372741).
+
+Thank you, and Happy Holidays!
+
+Kurt
